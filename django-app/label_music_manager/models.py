@@ -29,7 +29,7 @@ class Album(models.Model):
     price = models.DecimalField(max_digits=5, decimal_places=2, blank=False, validators=[MinValueValidator(0), MaxValueValidator(999.99)])
     format = models.CharField(max_length=2, choices=FORMAT_CHOICES)
     release_date = models.DateField(validators=[validate_release_date])
-    slug = models.SlugField(unique=True, blank=True)
+    slug = models.SlugField(unique=True, blank=True, editable=False)
     tracks = models.ManyToManyField('Song', through='AlbumTracklistItem')
 
     def save(self, *args, **kwargs):
