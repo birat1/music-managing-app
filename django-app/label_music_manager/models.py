@@ -7,10 +7,10 @@ from django.core.exceptions import ValidationError
 from datetime import date, timedelta
 
 
-def validate_release_date(self):
+def validate_release_date(release_date):
     max_future_date = date.today() + timedelta(days=3*365)
 
-    if self.release_date > max_future_date:
+    if release_date > max_future_date:
         raise ValidationError(
             'Release date cannot be more than 3 years in the future')
 
@@ -26,9 +26,7 @@ class Album(models.Model):
     title = models.CharField(max_length=512, blank=False)
     description = models.TextField(blank=True)
     artist = models.CharField(max_length=512, blank=False)
-    price = models.DecimalField(max_digits=5, decimal_places=2, blank=False,
-                                validators=[MinValueValidator(0),
-                                            MaxValueValidator(999.99)])
+    price = models.DecimalField(max_digits=5, decimal_places=2, blank=False, validators=[MinValueValidator(0), MaxValueValidator(999.99)])
     format = models.CharField(max_length=2, choices=FORMAT_CHOICES)
     release_date = models.DateField(validators=[validate_release_date])
     slug = models.SlugField(unique=True, blank=True)
@@ -45,8 +43,7 @@ class Album(models.Model):
 
 class Song(models.Model):
     title = models.CharField(max_length=512, blank=False)
-    length = models.PositiveIntegerField(blank=False,
-                                         validators=[MinValueValidator(10)])
+    length = models.PositiveIntegerField(blank=False, validators=[MinValueValidator(10)])
 
 
 class AlbumTracklistItem(models.Model):
@@ -68,5 +65,4 @@ class MusicManagerUser(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     display_name = models.CharField(max_length=512, blank=False)
-    permissions = models.CharField(max_length=6, choices=PERMISSION_CHOICES,
-                                   default='viewer')
+    permissions = models.CharField(max_length=6, choices=PERMISSION_CHOICES, default='viewer')
