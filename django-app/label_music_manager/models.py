@@ -32,6 +32,9 @@ class Album(models.Model):
     slug = models.SlugField(unique=True, blank=True, editable=False)
     tracks = models.ManyToManyField('Song', through='AlbumTracklistItem')
 
+    def __str__(self):
+        return self.title
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.title)
@@ -44,6 +47,9 @@ class Album(models.Model):
 class Song(models.Model):
     title = models.CharField(max_length=512, blank=False)
     length = models.PositiveIntegerField(blank=False, validators=[MinValueValidator(10)])
+
+    def __str__(self):
+        return self.title
 
 
 class AlbumTracklistItem(models.Model):
