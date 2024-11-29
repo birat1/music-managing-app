@@ -1,12 +1,16 @@
 # Write your serializers here
 from rest_framework import serializers
+from django.urls import reverse
 from .models import Album, Song, AlbumTracklistItem, MusicManagerUser
 
 
 class SongSerializer(serializers.ModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='songs-detail')
+
     class Meta:
         model = Song
-        fields = ['id', 'title', 'length']
+        fields = ['id', 'url', 'title', 'length']
+
 
 
 class AlbumSerializer(serializers.ModelSerializer):
@@ -14,23 +18,25 @@ class AlbumSerializer(serializers.ModelSerializer):
     short_description = serializers.SerializerMethodField()
     release_year = serializers.SerializerMethodField()
     total_playtime = serializers.SerializerMethodField()
+    url = serializers.HyperlinkedIdentityField(view_name='albums-detail')
 
     class Meta:
         model = Album
         fields = [
             'id',
+            'total_playtime',
+            'short_description',
+            'release_year',
+            'tracks',
+            'url',
             'cover_image',
             'title',
             'description',
-            'short_description',
             'artist',
             'price',
             'format',
             'release_date',
-            'release_year',
             'slug',
-            'tracks',
-            'total_playtime'
         ]
 
     def get_short_description(self, obj):
