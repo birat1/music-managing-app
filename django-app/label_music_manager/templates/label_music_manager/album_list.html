@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Album List{% endblock %}
+
+{% block extra_css %}
+<style>
+    .card-img-left {
+        width: 300px;
+        height: 300px;
+        object-fit: contain;
+    }
+    .album-card {
+        align-items: center;
+        overflow: hidden;
+    }
+    .card-text {
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        word-break: break-word;
+        white-space: normal;
+    }
+    .card-body {
+        width: calc(100% - 300px);
+    }
+    body {
+        background-color: #e7e7e7;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% for album in albums %}
+<div class="card w-75 mx-auto mt-4 d-flex flex-row album-card shadow-sm">
+    <!-- Album Image -->
+    <img src="{{ album.cover_image.url }}" class="card-img-left rounded-start" alt="{{ album.title }} cover">
+
+    <!-- Album Details -->
+    <div class="card-body">
+        <h5 class="card-title">{{ album.title }}</h5>
+        <p class="card-subtitle text-muted">{{ album.artist }}</p>
+        <p class="card-text mt-2">{{ album.description }}</p>
+        <p class="mt-3 fw-bold text-muted">{{ album.price }} ({{ album.get_format_display }})</p>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}
