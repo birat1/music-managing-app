@@ -1,0 +1,16 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold">MyMusicMaestro (Back Office)</a>
+        <div class="d-flex align-items-center">
+            {% if user.is_authenticated %}
+                <span class="me-3">{{ user.username }} [{{ user.display_name }}]</span>
+                <form action="{% url 'logout' %}" method="post" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-dark btn-sm">Logout</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn btn-dark btn-sm">Login</a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
