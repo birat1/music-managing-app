@@ -66,15 +66,15 @@ class AlbumTracklistItem(models.Model):
 
 
 class MusicManagerUser(models.Model):
-    PERMISSION_CHOICES = [
-        ('artist', 'Artist'),
-        ('editor', 'Editor'),
-        ('viewer', 'Viewer'),
-    ]
-
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     display_name = models.CharField(max_length=512, blank=False)
-    permissions = models.CharField(max_length=6, choices=PERMISSION_CHOICES, default='viewer')
+
+    class Meta:
+        permissions = [
+            ('Artist', 'artist'),
+            ('Editor', 'editor'),
+            ('Viewer', 'viewer')
+        ]
 
     def __str__(self):
         return f'{self.user.username} [{self.display_name}]'
