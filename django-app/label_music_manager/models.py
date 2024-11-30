@@ -61,6 +61,9 @@ class AlbumTracklistItem(models.Model):
         unique_together = ['album', 'song']
         ordering = ['position']
 
+    def __str__(self):
+        return f'{self.album.title} - {self.song.title}'
+
 
 class MusicManagerUser(models.Model):
     PERMISSION_CHOICES = [
@@ -72,3 +75,6 @@ class MusicManagerUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     display_name = models.CharField(max_length=512, blank=False)
     permissions = models.CharField(max_length=6, choices=PERMISSION_CHOICES, default='viewer')
+
+    def __str__(self):
+        return f'{self.user.username} [{self.display_name}]'
