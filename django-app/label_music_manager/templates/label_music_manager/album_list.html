@@ -29,6 +29,14 @@
 {% endblock %}
 
 {% block content %}
+{% if messages %}
+    <div class="alert alert-success">
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+{% endif %}
+
 {% for album in albums %}
 <div class="card w-75 mx-auto mt-4 d-flex flex-row album-card shadow-sm">
     <!-- Album Image -->
