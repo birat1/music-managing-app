@@ -12,7 +12,8 @@ router.register(r'tracklist', AlbumTracklistViewSet, basename='tracklist')
 
 urlpatterns = [
     # Templated views
-    path('', AlbumListView.as_view(), name='album_list'),
+    path('', AlbumListView.as_view(), name='home'),
+    path('albums/', AlbumListView.as_view(), name='album_list'),
     path('albums/<int:id>/', AlbumDetailView.as_view(), name='album_detail'),
     # path('albums/<int:id>/<slug:slug>/', AlbumDetailView.as_view(), name='album_detail_slug'),
     path('albums/new/', AlbumCreateView.as_view(), name='album_create'),

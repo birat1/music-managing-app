@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
     <div class="container-fluid">
-        <a href="{% url 'album_list' %}" class="navbar-brand fw-bold">MyMusicMaestro (Back Office)</a>
+        <a href="{% url 'home' %}" class="navbar-brand fw-bold">MyMusicMaestro (Back Office)</a>
         <div class="d-flex align-items-center">
             {% if user.is_authenticated %}
                 <span class="me-3">{{ user.username }} [{{ display_name }}]</span>
