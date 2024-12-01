@@ -53,11 +53,11 @@
     {% if perms.label_music_manager.Editor %}
         <!-- Editors can see both buttons -->
         <a href="{% url 'album_edit' album.id %}" class="btn btn-primary">Edit Album</a>
-        <a href="{% url 'album_delete' album.id %}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this album?');">Delete Album</a>
+        <a href="{% url 'album_delete' album.id %}" class="btn btn-danger">Delete Album</a>
     {% elif perms.label_music_manager.Artist and display_name == album.artist %}
         <!-- Artists can see these buttons only for their own albums -->
         <a href="{% url 'album_edit' album.id %}" class="btn btn-primary">Edit Album</a>
-        <a href="{% url 'album_delete' album.id %}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this album?');">Delete Album</a>
+        <a href="{% url 'album_delete' album.id %}" class="btn btn-danger">Delete Album</a>
     {% endif %}
 </div>
 
