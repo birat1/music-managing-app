@@ -9,6 +9,7 @@ from .models import Album, MusicManagerUser, Song, AlbumTracklistItem
 
 class AlbumModelTest(TestCase):
     def test_create_album(self):
+        # Create an album object
         album = Album.objects.create(
             cover_image='dripping-stereo.png',
             title='Test Album',
@@ -17,6 +18,7 @@ class AlbumModelTest(TestCase):
             format='CD',
             release_date=date.today() + timedelta(days=365*2),
         )
+
         self.assertEqual(album.title, 'Test Album')
         self.assertEqual(album.price, 9.99)
         self.assertEqual(album.format, 'CD')
@@ -39,14 +41,17 @@ class AlbumModelTest(TestCase):
 
 class SongModelTest(TestCase):
     def test_create_song(self):
+        # Create a song object
         song = Song.objects.create(
             title='Test Song',
             length=120,
         )
+
         self.assertEqual(song.title, 'Test Song')
         self.assertEqual(song.length, 120)
 
     def test_song_length_validation(self):
+        # Song length must be greater than 10 seconds
         with self.assertRaises(ValidationError):
             song = Song.objects.create(
                 title='Test Song',
@@ -80,7 +85,6 @@ class AlbumTracklistItemTest(TestCase):
             position=1
         )
 
-        # Assert item is created with correct attributes
         self.assertIsNotNone(tracklist_item)
         self.assertEqual(tracklist_item.album, self.album)
         self.assertEqual(tracklist_item.song, self.song1)
@@ -97,11 +101,12 @@ class MusicManagerUserTest(TestCase):
             user=self.user,
             display_name='Test User',
         )
+
         self.assertIsNotNone(music_manager_user)
         self.assertEqual(music_manager_user.user, self.user)
         self.assertEqual(music_manager_user.display_name, 'Test User')
 
-class URLPatternsTest(TestCase):
+class AlbumViewTest(TestCase):
     def setUp(self):
         # Create users
         self.viewer_user = User.objects.create_user(username='viewer', password='password')
@@ -122,20 +127,12 @@ class URLPatternsTest(TestCase):
         self.editor_user.user_permissions.add(editor_perm)
 
         # Create an album with tracks
-        self.album = Album.objects.create(
+        self.album1 = Album.objects.create(
             cover_image='dripping-stereo.png',
             title='Test Album',
-            artist='Test Artist',
+            artist='Artist',
             price=9.99,
             format='CD',
-            release_date=date.today(),
-        )
-        self.album2 = Album.objects.create(
-            cover_image='sealife.png',
-            title='Sealife',
-            artist='Artist',
-            price=14.99,
-            format='VL',
             release_date=date.today(),
         )
         self.song1 = Song.objects.create(
@@ -143,71 +140,199 @@ class URLPatternsTest(TestCase):
             length=120,
         )
         self.tracklist_item = AlbumTracklistItem.objects.create(
-            album=self.album,
+            album=self.album1,
             song=self.song1,
             position=1
         )
 
-    def test_album_list_url(self):
-        self.client.login(username='viewer', password='password')
+        # Create an empty album
+        self.album2 = Album.objects.create(
+            cover_image='sealife.png',
+            title='Sealife',
+            artist='Artist2',
+            price=14.99,
+            format='VL',
+            release_date=date.today(),
+        )
 
+    def test_album_list_view_without_login_redirects(self):
+        response = self.client.get(reverse('album_list'))
+        self.assertEqual(response.status_code, 302)
+
+    def test_artist_can_only_view_own_albums(self):
+        self.client.login(username='artist', password='password')
         response = self.client.get(reverse('album_list'))
         self.assertEqual(response.status_code, 200)
+        albums = response.context['albums']
+        self.assertEqual(list(albums), [self.album1])
 
-    def test_album_detail_url(self):
+    def test_viewer_editor_can_view_all_albums(self):
         self.client.login(username='viewer', password='password')
-
-        response = self.client.get(reverse('album_detail', args=[self.album.id]))
+        response = self.client.get(reverse('album_list'))
         self.assertEqual(response.status_code, 200)
+        albums = response.context['albums']
+        self.assertEqual(list(albums), [self.album1, self.album2])
 
-    def test_album_create_url(self):
-        # Should not be able to access as viewer
-        self.client.login(username='viewer', password='password')
-        with self.assertRaises(PermissionDenied):
-            self.client.get(reverse('album_create'))
-
-        # Should not be able to access as artist
-        self.client.login(username='artist', password='password')
-        with self.assertRaises(PermissionDenied):
-            self.client.get(reverse('album_create'))
-
-        # Only editors should be able to access
         self.client.login(username='editor', password='password')
-        response = self.client.get(reverse('album_create'))
+        response = self.client.get(reverse('album_list'))
         self.assertEqual(response.status_code, 200)
+        albums = response.context['albums']
+        self.assertEqual(list(albums), [self.album1, self.album2])
 
-    def test_album_edit_url(self):
-        # Should not be able to access as viewer
+    def test_album_detail_view_without_login_redirects(self):
+        response = self.client.get(reverse('album_detail', args=[self.album1.id]))
+        self.assertEqual(response.status_code, 302)
+
+    def test_album_detail_view_with_invalid_id(self):
+        self.client.login(username='viewer', password='password')
+        response = self.client.get(reverse('album_detail', args=[100]))
+        self.assertEqual(response.status_code, 404)
+
+    def test_viewer_artist_editor_album_detail_view(self):
+        self.client.login(username='viewer', password='password')
+        response = self.client.get(reverse('album_detail', args=[self.album1.id]))
+        self.assertEqual(response.status_code, 200)
+        album = response.context['album']
+        self.assertEqual(album, self.album1)
+
+        self.client.login(username='artist', password='password')
+        response = self.client.get(reverse('album_detail', args=[self.album1.id]))
+        self.assertEqual(response.status_code, 200)
+        album = response.context['album']
+        self.assertEqual(album, self.album1)
+
+        self.client.login(username='editor', password='password')
+        response = self.client.get(reverse('album_detail', args=[self.album1.id]))
+        self.assertEqual(response.status_code, 200)
+        album = response.context['album']
+        self.assertEqual(album, self.album1)
+
+    def test_album_edit_view_without_login_redirects(self):
+        response = self.client.get(reverse('album_edit', args=[self.album1.id]))
+        self.assertEqual(response.status_code, 302)
+
+    def test_album_edit_view_with_invalid_id(self):
+        self.client.login(username='editor', password='password')
+        response = self.client.get(reverse('album_edit', args=[100]))
+        self.assertEqual(response.status_code, 404)
+
+    def test_viewer_cannot_edit_any_albums(self):
         self.client.login(username='viewer', password='password')
         with self.assertRaises(PermissionDenied):
-            self.client.get(reverse('album_edit', args=[self.album.id]))
+            self.client.get(reverse('album_edit', args=[self.album1.id]))
 
-        # Artists cannot access other artist's albums
+    def test_artist_can_only_edit_own_albums(self):
         self.client.login(username='artist', password='password')
         with self.assertRaises(PermissionDenied):
-            self.client.get(reverse('album_edit', args=[self.album.id]))
+            self.client.get(reverse('album_edit', args=[self.album2.id]))
 
-        # Artists can only access their own albums
+        # Own album
+        response = self.client.get(reverse('album_edit', args=[self.album1.id]))
+        self.assertEqual(response.status_code, 200)
+
+    def test_editor_can_edit_any_albums(self):
+        self.client.login(username='editor', password='password')
+        response = self.client.get(reverse('album_edit', args=[self.album1.id]))
+        self.assertEqual(response.status_code, 200)
+
         response = self.client.get(reverse('album_edit', args=[self.album2.id]))
         self.assertEqual(response.status_code, 200)
 
-        # Editors can access every album
+    def test_album_edit_success(self):
         self.client.login(username='editor', password='password')
-        response = self.client.get(reverse('album_edit', args=[self.album.id]))
+        response = self.client.post(reverse('album_edit', args=[self.album1.id]), {
+            'cover_image': 'dripping-stereo.png',
+            'title': 'Updated Title',
+            'artist': 'Artist Name',
+            'price': 20,
+            'format': 'VL',
+            'release_date': '2023-01-01',
+        })
+        self.assertRedirects(response, reverse('album_detail', args=[self.album1.id]))
+        self.album1.refresh_from_db()
+        self.assertEqual(self.album1.title, 'Updated Title')
+
+    def test_album_edit_with_invalid_data(self):
+        self.client.login(username='editor', password='password')
+        response = self.client.post(reverse('album_edit', args=[self.album1.id]), {
+            'title': '',
+            'cover_image': '',
+            'description': 'Updated Description',
+            'artist': 'Test Artist',
+            'price': 10.99,
+            'format': 'CD',
+            'release_date': '2023-01-01'
+        })
         self.assertEqual(response.status_code, 200)
 
-    def test_album_delete_url(self):
-        # Should not be able to access as viewer
+        # Ensure the form contains a validation error for the title
+        form = response.context['form']
+        self.assertIn('title', form.errors)
+        self.assertEqual(form.errors['title'], ['This field is required.'])
+
+    def test_album_delete_view_without_login_redirects(self):
+        response = self.client.get(reverse('album_delete', args=[self.album1.id]))
+        self.assertEqual(response.status_code, 302)
+
+    def test_viewer_cannot_delete_albums(self):
         self.client.login(username='viewer', password='password')
         with self.assertRaises(PermissionDenied):
-            self.client.get(reverse('album_delete', args=[self.album.id]))
+            self.client.get(reverse('album_delete', args=[self.album1.id]))
 
-        # Artists cannot delete their own albums
+    def test_artist_cannot_delete_own_album(self):
         self.client.login(username='artist', password='password')
         with self.assertRaises(PermissionDenied):
-            self.client.get(reverse('album_delete', args=[self.album2.id]))
+            self.client.get(reverse('album_delete', args=[self.album1.id]))
 
-        # Editors can delete albums
+    def test_editor_can_delete_any_albums(self):
         self.client.login(username='editor', password='password')
-        response = self.client.get(reverse('album_delete', args=[self.album.id]))
+        response = self.client.post(reverse('album_delete', args=[self.album1.id]))
+        self.assertRedirects(response, reverse('album_list'))
+        self.assertFalse(Album.objects.filter(id=self.album1.id).exists())
+
+    def test_editor_attempts_to_delete_nonexistent_album(self):
+        self.client.login(username='editor', password='password')
+        url = reverse('album_delete', kwargs={'id': 9999})
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_viewer_cannot_create_albums(self):
+        self.client.login(username='viewer', password='password')
+        with self.assertRaises(PermissionDenied):
+            self.client.get(reverse('album_create'))
+
+    def test_artist_cannot_create_albums(self):
+        self.client.login(username='artist', password='password')
+        with self.assertRaises(PermissionDenied):
+            self.client.get(reverse('album_create'))
+
+    def test_editor_can_create_albums(self):
+        self.client.login(username='editor', password='password')
+        response = self.client.post(reverse('album_create'), {
+            'title': 'New Album',
+            'artist': 'Artist Name',
+            'cover_image': 'cover.png',
+            'description': 'A wonderful album',
+            'price': 12.99,
+            'format': 'CD',
+            'release_date': '2023-01-01'
+        })
+        self.assertRedirects(response, reverse('album_list'))
+        self.assertTrue(Album.objects.filter(title='New Album').exists())
+
+    def test_editor_attempts_to_create_album_with_invalid_data(self):
+        self.client.login(username='editor', password='password')
+        response = self.client.post(reverse('album_create'), {
+            'title': '',
+            'cover_image': '',
+            'description': 'A wonderful album',
+            'artist': 'Artist Name',
+            'price': 12.99,
+            'format': 'CD',
+        })
         self.assertEqual(response.status_code, 200)
+
+        # Ensure the form contains a validation error for the title
+        form = response.context['form']
+        self.assertIn('title', form.errors)
+        self.assertEqual(form.errors['title'], ['This field is required.'])
