@@ -5,7 +5,7 @@ function App() {
   return (
     <Container>
       <h1>Welcome to your APP!</h1>
-      <p> You should follow the brief to implement tow pages "src/pages/Album.js" and "src/pages/Album.js"</p>
+      <p> You should follow the brief to implement two pages "src/pages/Album.js" and "src/pages/Home.js"</p>
       <h2> Some important points:</h2>
       <ul>
         <li> Do not install any further dependencies  </li>
@@ -16,10 +16,10 @@ function App() {
           <pre>
             <code>
               {`
-fetch(\`\${API}albums\`) 
-or 
-fetch(\`\${API}albums/\${id}\`)
-  `}
+                fetch(\`\${API}albums\`) 
+                or 
+                fetch(\`\${API}albums/\${id}\`)
+              `}
             </code>
           </pre>
         </li>
