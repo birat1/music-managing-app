@@ -2,7 +2,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.contrib import messages
 from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView, UpdateView, DeleteView
+from django.views.generic import ListView, DetailView, UpdateView, DeleteView, CreateView
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import get_object_or_404
 
@@ -160,3 +160,37 @@ class AlbumDeleteView(LoginRequiredMixin, DeleteView):
     def get_success_url(self):
         # Redirect to the album list after a successful delete
         return reverse_lazy('album_list')
+
+class AlbumCreateView(LoginRequiredMixin, CreateView):
+    model = Album
+    fields = [
+        'title',
+        'cover_image',
+        'description',
+        'artist',
+        'price',
+        'format',
+        'release_date',
+    ]
+    template_name = 'label_music_manager/album_edit.html'
+    context_object_name = 'album'
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.has_perm('label_music_manager.Editor'):
+            raise PermissionDenied("You do not have permission to create an album.")
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['songs'] = Song.objects.all()
+        # Ensure 'album' key is included to mimic the existing instance
+        context['album'] = self.object if hasattr(self, 'object') else None
+        return context
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Album created successfully.')
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('album_detail', kwargs={'id': self.object.id})
+
