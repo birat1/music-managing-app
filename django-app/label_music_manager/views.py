@@ -1,15 +1,17 @@
 # Use this file for your templated views only
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, UpdateView, DeleteView, CreateView
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import get_object_or_404
-
 from .models import Album, MusicManagerUser, AlbumTracklistItem, Song
 
-
 class AlbumListView(LoginRequiredMixin, ListView):
+    """
+    Displays a list of all albums.
+    Artists only see their own albums, while other users can view all albums.
+    """
     model = Album
     context_object_name = 'albums'
     template_name = 'label_music_manager/album_list.html'
@@ -25,20 +27,29 @@ class AlbumListView(LoginRequiredMixin, ListView):
         return Album.objects.all()
 
     def get_context_data(self, **kwargs):
+        """
+        Include the display name of the user for template access.
+        """
         user = self.request.user
         context = super().get_context_data(**kwargs)
-
         music_manager_user = MusicManagerUser.objects.get(user=user)
         context['display_name'] = music_manager_user.display_name
 
         return context
 
 class AlbumDetailView(LoginRequiredMixin, DetailView):
+    """
+    Displays details of a single album.
+    Looks up album by its ID and optional slug.
+    """
     model = Album
     context_object_name = 'album'
     template_name = 'label_music_manager/album_detail.html'
 
     def get_object(self, queryset=None):
+        """
+        Retrieve the album by ID and slug or ID only.
+        """
         album_id = self.kwargs.get('id')
         album_slug = self.kwargs.get('slug')
 
@@ -49,6 +60,9 @@ class AlbumDetailView(LoginRequiredMixin, DetailView):
         return get_object_or_404(Album, id=album_id)
 
     def get_context_data(self, **kwargs):
+        """
+        Add album tracks and display name for template access.
+        """
         user = self.request.user
         context = super().get_context_data(**kwargs)
 
@@ -64,6 +78,11 @@ class AlbumDetailView(LoginRequiredMixin, DetailView):
         return context
 
 class AlbumEditView(LoginRequiredMixin, UpdateView):
+    """
+    Handles editing of album details.
+    Artists can only edit albums that they are the artist of.
+    Editors can edit any album.
+    """
     model = Album
     fields = [
         'title',
@@ -78,6 +97,9 @@ class AlbumEditView(LoginRequiredMixin, UpdateView):
     context_object_name = 'album'
 
     def get_object(self, queryset=None):
+        """
+        Retrieve album object for editing
+        """
         album_id = self.kwargs.get('id')
         album = get_object_or_404(Album, id=album_id)
 
@@ -96,6 +118,10 @@ class AlbumEditView(LoginRequiredMixin, UpdateView):
         raise PermissionDenied("You do not have permission to edit this album.")
 
     def get_context_data(self, **kwargs):
+        """
+        Retrieves the tracklist of the album with their positions.
+        Adds display name for template access and all songs for dropdown.
+        """
         user = self.request.user
         context = super().get_context_data(**kwargs)
 
@@ -108,14 +134,15 @@ class AlbumEditView(LoginRequiredMixin, UpdateView):
         # Format tracks as Position: Track Name and join them with newlines
         tracks_string = "\n".join([f"{item.position}: {item.song.title}" for item in track_items])
         context['tracks'] = tracks_string
-
-        # Pass all available songs to the template for the dropdown
         context['songs'] = Song.objects.all()
 
         return context
 
     def form_valid(self, form):
-        # Handle saving the selected tracks
+        """
+        Handle form submission for album editing.
+        Save selected tracks to the album.
+        """
         album = form.save(commit=False)
         selected_tracks = self.request.POST.getlist('tracks')
 
@@ -124,20 +151,30 @@ class AlbumEditView(LoginRequiredMixin, UpdateView):
         for track_id in selected_tracks:
             song = Song.objects.get(id=track_id)
             album.tracks.add(song)
-
         album.save()
+
         messages.success(self.request, 'Album updated successfully.')
         return super().form_valid(form)
 
     def get_success_url(self):
+        """
+        Redirect back to album detail page after editing successfully.
+        """
         return reverse_lazy('album_detail', kwargs={'id': self.object.id})
 
 class AlbumDeleteView(LoginRequiredMixin, DeleteView):
+    """
+    Handles deleting an album.
+    Only Editors can delete albums.
+    """
     model = Album
     context_object_name = 'album'
     template_name = 'label_music_manager/album_confirm_delete.html'
 
     def get_object(self, queryset=None):
+        """
+        Retrieve the album for deletion.
+        """
         album_id = self.kwargs.get('id')
         album = get_object_or_404(Album, id=album_id)
 
@@ -154,14 +191,23 @@ class AlbumDeleteView(LoginRequiredMixin, DeleteView):
         raise PermissionDenied("You do not have permission to delete this album.")
 
     def form_valid(self, form):
+        """
+        Provide confirmation message upon successful deletion.
+        """
         messages.success(self.request, 'Album deleted successfully')
         return super().form_valid(form)
 
     def get_success_url(self):
-        # Redirect to the album list after a successful delete
+        """
+        Redirect back to album list after successful deletion.
+        """
         return reverse_lazy('album_list')
 
 class AlbumCreateView(LoginRequiredMixin, CreateView):
+    """
+    Handles album creation.
+    Only Editors can create albums.
+    """
     model = Album
     fields = [
         'title',
@@ -176,21 +222,31 @@ class AlbumCreateView(LoginRequiredMixin, CreateView):
     context_object_name = 'album'
 
     def dispatch(self, request, *args, **kwargs):
+        # Only Editors can create albums
         if not request.user.has_perm('label_music_manager.Editor'):
             raise PermissionDenied("You do not have permission to create an album.")
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
+        """
+        Include all songs for dropdown.
+        """
         context = super().get_context_data(**kwargs)
         context['songs'] = Song.objects.all()
-        # Ensure 'album' key is included to mimic the existing instance
         context['album'] = self.object if hasattr(self, 'object') else None
+
         return context
 
     def form_valid(self, form):
+        """
+        Provide confirmation message upon successful album creation.
+        """
         messages.success(self.request, 'Album created successfully.')
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse_lazy('album_detail', kwargs={'id': self.object.id})
+        """
+        Redirect to album list on successful creation.
+        """
+        return reverse_lazy('album_list')
 
