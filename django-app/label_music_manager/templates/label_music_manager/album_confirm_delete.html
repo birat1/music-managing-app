@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirm Deletion{% endblock %}
+
+{% block content %}
+    <div class="alert alert-danger">
+        <h4 class="alert-heading">Are you sure you want to delete this album?</h4>
+        <p>Once deleted, this action cannot be undone.</p>
+        <p><strong>Album:</strong> {{ album.title }}</p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Yes, Delete</button>
+            <a href="{% url 'album_list' %}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+{% endblock %}
