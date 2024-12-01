@@ -18,15 +18,15 @@ class AlbumListView(LoginRequiredMixin, ListView):
         user = self.request.user
         music_manager_user = MusicManagerUser.objects.get(user=user)
 
+        # Artists can only view their own albums
         if user.is_authenticated and user.has_perm('label_music_manager.Artist'):
-            return Album.objects.filter(artist=music_manager_user.display_name) # Artists can only view their own albums
+            return Album.objects.filter(artist=music_manager_user.display_name)
         # Unauthenticated users, viewers, and editors can view all albums.
         return Album.objects.all()
 
     def get_context_data(self, **kwargs):
         user = self.request.user
         context = super().get_context_data(**kwargs)
-        context.update({'messages': messages.get_messages(self.request)})
 
         music_manager_user = MusicManagerUser.objects.get(user=user)
         context['display_name'] = music_manager_user.display_name
@@ -81,7 +81,6 @@ class AlbumEditView(LoginRequiredMixin, UpdateView):
         album_id = self.kwargs.get('id')
         album = get_object_or_404(Album, id=album_id)
 
-        # Check if the user is an Editor or the Artist of the album
         user = self.request.user
         music_manager_user = MusicManagerUser.objects.get(user=user)
 
@@ -108,8 +107,7 @@ class AlbumEditView(LoginRequiredMixin, UpdateView):
         track_items = AlbumTracklistItem.objects.filter(album=album).order_by('position')
         # Format tracks as Position: Track Name and join them with newlines
         tracks_string = "\n".join([f"{item.position}: {item.song.title}" for item in track_items])
-
-        context['tracks'] = tracks_string  # Pass the formatted tracks string to the template
+        context['tracks'] = tracks_string
 
         # Pass all available songs to the template for the dropdown
         context['songs'] = Song.objects.all()
@@ -146,11 +144,13 @@ class AlbumDeleteView(LoginRequiredMixin, DeleteView):
         user = self.request.user
         music_manager_user = MusicManagerUser.objects.get(user=user)
 
-        # Check for permissions
+        # Editors are able to delete albums
         if user.has_perm('label_music_manager.Editor'):
             return album
+        # Artists cannot delete their own albums
         if user.has_perm('label_music_manager.Artist') and album.artist == music_manager_user.display_name:
             raise PermissionDenied("Artists cannot delete their own albums.")
+        # If not editor, then you cannot delete albums
         raise PermissionDenied("You do not have permission to delete this album.")
 
     def form_valid(self, form):
