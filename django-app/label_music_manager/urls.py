@@ -2,7 +2,7 @@
 from django.contrib.auth.views import LogoutView
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
-from .views import AlbumListView, AlbumDetailView, AlbumEditView, AlbumDeleteView
+from .views import AlbumListView, AlbumDetailView, AlbumEditView, AlbumDeleteView, AlbumCreateView
 from .api_views import AlbumViewSet, SongViewSet, AlbumTracklistViewSet
 
 router = DefaultRouter()
@@ -15,6 +15,7 @@ urlpatterns = [
     path('', AlbumListView.as_view(), name='album_list'),
     path('albums/<int:id>/', AlbumDetailView.as_view(), name='album_detail'),
     # path('albums/<int:id>/<slug:slug>/', AlbumDetailView.as_view(), name='album_detail_slug'),
+    path('albums/new/', AlbumCreateView.as_view(), name='album_create'),
     path('albums/<int:id>/edit/', AlbumEditView.as_view(), name='album_edit'),
     path('albums/<int:id>/delete/', AlbumDeleteView.as_view(), name='album_delete'),
 
