@@ -29,14 +29,17 @@
 {% endblock %}
 
 {% block content %}
+
+<!-- Success Message Section -->
 {% if messages %}
-    <div class="alert alert-success">
+    <div class="alert alert-success mt-2" role="alert">
         {% for message in messages %}
             <p>{{ message }}</p>
         {% endfor %}
     </div>
 {% endif %}
 
+<!-- Albums List -->
 {% for album in albums %}
 <div class="card w-75 mx-auto mt-4 d-flex flex-row album-card shadow-sm">
     <!-- Album Image -->

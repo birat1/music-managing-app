@@ -1,7 +1,6 @@
 # Use this file for your templated views only
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.contrib import messages
-from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, UpdateView, DeleteView
 from rest_framework.exceptions import PermissionDenied
@@ -27,6 +26,7 @@ class AlbumListView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         user = self.request.user
         context = super().get_context_data(**kwargs)
+        context.update({'messages': messages.get_messages(self.request)})
 
         music_manager_user = MusicManagerUser.objects.get(user=user)
         context['display_name'] = music_manager_user.display_name
@@ -153,16 +153,9 @@ class AlbumDeleteView(LoginRequiredMixin, DeleteView):
             raise PermissionDenied("Artists cannot delete their own albums.")
         raise PermissionDenied("You do not have permission to delete this album.")
 
-    def delete(self, request, *args, **kwargs):
-        # Perform the delete operation
-        album = self.get_object()
-        response = super().delete(request, *args, **kwargs)
-
-        # Add success message after deletion
-        messages.success(self.request, 'Album deleted successfully.')
-
-        # Redirect back to the album list
-        return response
+    def form_valid(self, form):
+        messages.success(self.request, 'Album deleted successfully')
+        return super().form_valid(form)
 
     def get_success_url(self):
         # Redirect to the album list after a successful delete
