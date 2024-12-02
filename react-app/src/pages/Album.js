@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Container, Row, Col, Image, ListGroup, Breadcrumb } from 'react-bootstrap';
 import { API } from '../constants';
+import Error from '../components/Error';
+import Loading from '../components/Loading';
 
 const fetchAlbum = async ({ queryKey }) => {
   const [, id] = queryKey;
@@ -20,8 +22,8 @@ function Album() {
     queryFn: fetchAlbum,
   });
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error loading album: {error.message}</div>;
+  if (isLoading) return <Loading />;
+  if (error) return <Error message={`Error loading album: ${error.message}`} />;
 
   const totalMinutes = Math.floor(album.total_playtime / 60);
   const totalSeconds = album.total_playtime % 60;

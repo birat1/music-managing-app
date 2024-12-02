@@ -3,6 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import { API } from '../constants';
 import { Card, Row, Col, Container } from 'react-bootstrap';
 import './Home.css';
+import Error from '../components/Error';
+import Loading from '../components/Loading';
 
 const fetchAlbums = async () => {
     const response = await fetch(`${API}albums/`);
@@ -18,8 +20,8 @@ function Home() {
         queryFn: fetchAlbums,
     });
 
-    if (isLoading) return <div>Loading...</div>;
-    if (error) return <div>Error loading albums: {error.message}</div>;
+    if (isLoading) return <Loading />;
+    if (error) return <Error message={`Error loading album: ${error.message}`} />;
 
     return (
         <Container className='mt-4'>
