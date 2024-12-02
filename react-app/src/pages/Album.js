@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { Container, Row, Col, Image, ListGroup } from 'react-bootstrap';
+import { Container, Row, Col, Image, ListGroup, Breadcrumb } from 'react-bootstrap';
 import { API } from '../constants';
 
 const fetchAlbum = async ({ queryKey }) => {
@@ -28,6 +28,10 @@ function Album() {
 
   return (
     <Container className='mt-4'>
+      <Breadcrumb>
+        <Breadcrumb.Item href='/'>Home</Breadcrumb.Item>
+        <Breadcrumb.Item active>{album.title}</Breadcrumb.Item>
+      </Breadcrumb>
       <Row>
         <Col md={4}>
           <Image src={album.cover_image} alt={album.title} fluid />
