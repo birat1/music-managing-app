@@ -29,15 +29,14 @@ class Album(models.Model):
     price = models.DecimalField(max_digits=5, decimal_places=2, blank=False, validators=[MinValueValidator(0), MaxValueValidator(999.99)])
     format = models.CharField(max_length=2, choices=FORMAT_CHOICES)
     release_date = models.DateField(validators=[validate_release_date])
-    slug = models.SlugField(unique=True, blank=True, editable=False)
+    slug = models.SlugField(blank=True)
     tracks = models.ManyToManyField('Song', through='AlbumTracklistItem')
 
     def __str__(self):
         return self.title
 
     def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.title)
+        self.slug = slugify(self.title)
         super().save(*args, **kwargs)
 
     class Meta:
