@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
 {% block content %}
 <div class="container">
@@ -6,48 +7,48 @@
     {% csrf_token %}
 
     <div class="mb-3">
-      <label for="title" class="form-label">Title*</label>
+      <label for="title" class="form-label">{% trans 'Title' %}*</label>
       <input type="text" class="form-control" id="title" name="title" value="{{ album.title }}" required>
     </div>
 
     <div class="mb-3">
-      <label for="cover_image" class="form-label">Cover Image</label>
+      <label for="cover_image" class="form-label">{% trans 'Cover Image' %}</label>
       <input type="file" class="form-control" id="cover_image" name="cover_image">
     </div>
 
     <div class="mb-3">
-      <label for="description" class="form-label">Description</label>
+      <label for="description" class="form-label">{% trans 'Description' %}</label>
       <textarea class="form-control" id="description" name="description" rows="3">{{ album.description }}</textarea>
     </div>
 
     <div class="mb-3">
-      <label for="artist" class="form-label">Artist*</label>
+      <label for="artist" class="form-label">{% trans 'Artist' %}*</label>
       <input type="text" class="form-control" id="artist" name="artist" value="{{ album.artist }}" required>
     </div>
 
     <div class="mb-3">
-      <label for="price" class="form-label">Price*</label>
+      <label for="price" class="form-label">{% trans 'Price' %}*</label>
       <input type="number" class="form-control" id="price" name="price" value="{{ album.price }}" step="0.01" required>
     </div>
 
     <div class="mb-3">
-      <label for="format" class="form-label">Format*</label>
+      <label for="format" class="form-label">{% trans 'Format' %}*</label>
       <select class="form-select" id="format" name="format" required>
-        <option value="DD" {% if album.format == "DD" %}selected{% endif %}>Digital Download</option>
-        <option value="CD" {% if album.format == "CD" %}selected{% endif %}>CD</option>
-        <option value="VL" {% if album.format == "VL" %}selected{% endif %}>Vinyl</option>
+        <option value="DD" {% if album.format == "DD" %}selected{% endif %}>{% trans 'Digital Download' %}</option>
+        <option value="CD" {% if album.format == "CD" %}selected{% endif %}>{% trans 'CD' %}</option>
+        <option value="VL" {% if album.format == "VL" %}selected{% endif %}>{% trans 'Vinyl' %}</option>
       </select>
     </div>
 
 
     <div class="mb-3">
-      <label for="release_date" class="form-label">Release Date*</label>
+      <label for="release_date" class="form-label">{% trans 'Release Date' %}*</label>
       <input type="date" class="form-control" id="release_date" name="release_date" value="{{ album.release_date|date:'Y-m-d' }}" required>
     </div>
 
     <!-- Displaying and editing tracks in a textarea -->
     <div class="mb-3">
-      <label for="tracks" class="form-label">Tracks</label>
+      <label for="tracks" class="form-label">{% trans 'Tracks' %}</label>
       <select class="form-select" id="tracks" name="tracks" multiple>
         {% for song in songs %}
           <option value="{{ song.id }}" {% if song in album.tracks.all %}selected{% endif %}>
@@ -57,8 +58,8 @@
       </select>
     </div>
 
-    <button type="submit" class="btn btn-primary">Save</button>
-    <a href="{% url 'album_list' %}" class="btn btn-secondary">Cancel</a>
+    <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
+    <a href="{% url 'album_list' %}" class="btn btn-secondary">{% trans 'Cancel' %}</a>
   </form>
 </div>
 {% endblock %}

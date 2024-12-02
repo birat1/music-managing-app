@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
-{% block title %}Album List{% endblock %}
+{% block title %}{% trans 'Album List' %}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -42,7 +43,7 @@
 <!-- Add New Album Button -->
 <div class="container mt-2">
     <div class="d-flex justify-content-center">
-        <a href="{% url 'album_create' %}" class="btn btn-primary">Add New Album</a>
+        <a href="{% url 'album_create' %}" class="btn btn-primary">{% trans 'Add New Album' %}</a>
     </div>
 </div>
 

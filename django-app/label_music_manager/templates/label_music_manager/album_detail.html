@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
 {% block title %}{{ album.title }}{% endblock %}
 
@@ -52,12 +53,12 @@
 <div class="album-actions">
     {% if perms.label_music_manager.Editor %}
         <!-- Editors can see both buttons -->
-        <a href="{% url 'album_edit' album.id %}" class="btn btn-primary">Edit Album</a>
-        <a href="{% url 'album_delete' album.id %}" class="btn btn-danger">Delete Album</a>
+        <a href="{% url 'album_edit' album.id %}" class="btn btn-primary">{% trans 'Edit Album' %}</a>
+        <a href="{% url 'album_delete' album.id %}" class="btn btn-danger">{% trans 'Delete Album' %}</a>
     {% elif perms.label_music_manager.Artist and display_name == album.artist %}
         <!-- Artists can see these buttons only for their own albums -->
-        <a href="{% url 'album_edit' album.id %}" class="btn btn-primary">Edit Album</a>
-        <a href="{% url 'album_delete' album.id %}" class="btn btn-danger">Delete Album</a>
+        <a href="{% url 'album_edit' album.id %}" class="btn btn-primary">{% trans 'Edit Album' %}</a>
+        <a href="{% url 'album_delete' album.id %}" class="btn btn-danger">{% trans 'Delete Album' %}</a>
     {% endif %}
 </div>
 
@@ -72,19 +73,19 @@
         <p class="card-subtitle text-muted">{{ album.artist }}</p>
         <p class="card-text mt-2">{{ album.description }}</p>
         <p class="mt-3 fw-bold text-muted">{{ album.price }} ({{ album.get_format_display }})</p>
-        <p class="mt-2"><strong>Release Date:</strong> {{ album.release_date }}</p>
+        <p class="mt-2"><strong>{% trans 'Release Date:' %}</strong> {{ album.release_date }}</p>
     </div>
 </div>
 
 <!-- Tracklist Card -->
 <div class="card w-75 mx-auto mt-4 shadow-sm">
     <div class="card-body">
-        <h5 class="card-title">Tracklist</h5>
+        <h5 class="card-title">{% trans 'Tracklist' %}</h5>
         <ul class="list-group list-group-flush">
             {% for track in tracks %}
             <li class="list-group-item">{{ forloop.counter }}. {{ track }} - {{ track.length }}s</li>
             {% empty %}
-            <li class="list-group-item">No tracks available for this album.</li>
+            <li class="list-group-item">{% trans 'No tracks available for this album.' %}</li>
             {% endfor %}
         </ul>
     </div>
