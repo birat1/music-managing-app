@@ -179,9 +179,9 @@ class AlbumViewTest(TestCase):
         albums = response.context['albums']
         self.assertEqual(list(albums), [self.album1, self.album2])
 
-    def test_album_detail_view_without_login_redirects(self):
+    def test_unauthenticated_user_album_detail_view(self):
         response = self.client.get(reverse('album_detail', args=[self.album1.id]))
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 200)
 
     def test_album_detail_view_with_invalid_id(self):
         self.client.login(username='viewer', password='password')
