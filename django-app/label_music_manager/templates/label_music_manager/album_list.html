@@ -41,11 +41,13 @@
 {% endif %}
 
 <!-- Add New Album Button -->
+{% if perms.label_music_manager.Editor %}
 <div class="container mt-2">
     <div class="d-flex justify-content-center">
         <a href="{% url 'album_create' %}" class="btn btn-primary">{% trans 'Add New Album' %}</a>
     </div>
 </div>
+{% endif %}
 
 <!-- Albums List -->
 {% for album in albums %}
