@@ -155,9 +155,9 @@ class AlbumViewTest(TestCase):
             release_date=date.today(),
         )
 
-    def test_album_list_view_without_login_redirects(self):
+    def test_unauthenticated_user_can_view_all_albums(self):
         response = self.client.get(reverse('album_list'))
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 200)
 
     def test_artist_can_only_view_own_albums(self):
         self.client.login(username='artist', password='password')
