@@ -7,7 +7,7 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import get_object_or_404
 from .models import Album, MusicManagerUser, AlbumTracklistItem, Song
 
-class AlbumListView(LoginRequiredMixin, ListView):
+class AlbumListView(ListView):
     """
     Displays a list of all albums.
     Artists only see their own albums, while other users can view all albums.
@@ -18,12 +18,17 @@ class AlbumListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         user = self.request.user
-        music_manager_user = MusicManagerUser.objects.get(user=user)
+
+        # Unauthenticated users can view all albums
+        if not user.is_authenticated:
+            return Album.objects.all()
 
         # Artists can only view their own albums
-        if user.is_authenticated and user.has_perm('label_music_manager.Artist'):
-            return Album.objects.filter(artist=music_manager_user.display_name)
-        # Unauthenticated users, viewers, and editors can view all albums.
+        if user.is_authenticated:
+            music_manager_user = MusicManagerUser.objects.get(user=user)
+            if user.has_perm('label_music_manager.Artist'):
+                return Album.objects.filter(artist=music_manager_user.display_name)
+        # Viewers and editors can view all albums.
         return Album.objects.all()
 
     def get_context_data(self, **kwargs):
@@ -32,8 +37,11 @@ class AlbumListView(LoginRequiredMixin, ListView):
         """
         user = self.request.user
         context = super().get_context_data(**kwargs)
-        music_manager_user = MusicManagerUser.objects.get(user=user)
-        context['display_name'] = music_manager_user.display_name
+
+        # Check if the user is authenticated
+        if user.is_authenticated:
+            music_manager_user = MusicManagerUser.objects.get(user=user)
+            context['display_name'] = music_manager_user.display_name
 
         return context
 
