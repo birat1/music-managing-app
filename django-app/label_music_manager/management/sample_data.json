@@ -1,0 +1,141 @@
+{
+  "albums": [
+    {
+      "cover": "dripping-stereo.png",
+      "title": "Dripping Stereo (Deluxe Edition)",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas quis ullamcorper magna. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc malesuada elit ut fringilla blandit. Curabitur augue dui, gravida sit amet orci sit amet, malesuada sodales purus. Donec ut ipsum tristique, viverra dolor ac, vehicula massa. Integer convallis arcu quis nibh auctor, a mollis neque vestibulum. Donec eget tincidunt urna, sed commodo purus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Pellentesque id faucibus sem. Vivamus cursus turpis fermentum arcu luctus mattis. Vivamus ut consequat mauris. Cras malesuada libero eget malesuada posuere. Fusce felis arcu, volutpat vel blandit condimentum, mattis ut dui. Vestibulum felis odio, lobortis et massa blandit, consequat pretium ipsum. Vivamus sit amet tortor in quam placerat accumsan nec hendrerit ex. Sed fringilla velit et leo convallis varius. Cras tristique sapien in risus luctus, non cursus odio tincidunt. Suspendisse congue justo at sem porta, ac auctor nisi tincidunt. Nulla ullamcorper scelerisque nibh, quis interdum massa rhoncus at. Aliquam volutpat, lacus ac posuere sodales, ante odio gravida dolor, a interdum purus felis at lacus. Donec sed enim eget odio dignissim mollis. Phasellus dolor urna, varius vitae elit sed, laoreet gravida tortor. Donec vitae felis vestibulum, egestas felis id, pulvinar urna. Aliquam pretium mattis urna in ullamcorper. Proin tristique neque a odio scelerisque, in gravida diam feugiat. Cras malesuada finibus libero, at fringilla diam maximus a. Aenean auctor massa a aliquet luctus. Sed faucibus sodales ex, ac faucibus ligula imperdiet eget.",
+      "artist": "Jonathan Rocs",
+      "price": 5,
+      "format": "Vinyl",
+      "release_date": "2023-06-06"
+    },
+    {
+      "cover": "music-for-cats.png",
+      "title": "Music for Cats",
+      "description": "Your cats will enjoy",
+      "artist": "MyCatMusicCo",
+      "price": 35,
+      "format": "Digital download",
+      "release_date": "2023-06-06"
+    },
+    {
+      "cover": "my-red-house.png",
+      "title": "My Red House",
+      "description": "The soulful audio experience from Agnes Merrello",
+      "artist": "Agnes Merrello",
+      "price": 3.99,
+      "format": "CD",
+      "release_date": "2023-06-06"
+    },
+    {
+      "cover": "my-red-house.png",
+      "title": "My Red House",
+      "description": "The soulful audio experience from Agnes Merrello, now on Vinyl!",
+      "artist": "Agnes Merrello",
+      "price": 12,
+      "format": "Vinyl",
+      "release_date": "2023-06-06"
+    },
+    {
+      "cover": "our-technicolour-world.png",
+      "title": "OUR TECHNICOLOUR (world)",
+      "description": "",
+      "artist": "pippumpkin",
+      "price": 1.99,
+      "format": "Digital download",
+      "release_date": "2023-06-06"
+    },
+    {
+      "cover": "sealife.png",
+      "title": "sealife part II reprise EP",
+      "description": "",
+      "artist": "Tom Turle and Friends",
+      "price": 0,
+      "format": "Digital download",
+      "release_date": "2023-06-06"
+    },
+    {
+      "cover": null,
+      "title": "Biggest Hits Compilation",
+      "description": "",
+      "artist": "Songster",
+      "price": 1.99,
+      "format": "Digital download",
+      "release_date": "2023-06-06"
+    }
+  ],
+  "songs": [
+    {
+      "title": "its too loud",
+      "runtime": 294,
+      "albums": [
+        "Dripping Stereo (Deluxe Edition)"
+      ]
+    },
+    {
+      "title": "oh actually its fine",
+      "runtime": 231,
+      "albums": [
+        "Dripping Stereo (Deluxe Edition)"
+      ]
+    },
+    {
+      "title": "nope too loud",
+      "runtime": 127,
+      "albums": [
+        "Dripping Stereo (Deluxe Edition)"
+      ]
+    },
+    {
+      "title": "Running without a care at 4am",
+      "runtime": 1000,
+      "albums": [
+        "Music for Cats"
+      ]
+    },
+    {
+      "title": "Snoozing all day",
+      "runtime": 1505,
+      "albums": [
+        "Music for Cats"
+      ]
+    },
+    {
+      "title": "My bowl is empty (again) (sad version)",
+      "runtime": 340,
+      "albums": [
+        "Music for Cats"
+      ]
+    },
+    {
+      "title": "The dog is back",
+      "runtime": 134,
+      "albums": [
+        "Music for Cats"
+      ]
+    },
+    {
+      "title": "BRICKS ARE FALLING",
+      "runtime": 180,
+      "albums": [
+        "My Red House"
+      ]
+    },
+    {
+      "title": "THE HEARTH AND HOME",
+      "runtime": 182,
+      "albums": [
+        "My Red House",
+        "Biggest Hits Compilation"
+      ]
+    },
+    {
+      "title": "LEAKY ROOF",
+      "runtime": 189,
+      "albums": [
+        "My Red House",
+        "Biggest Hits Compilation"
+      ]
+    }
+  ]
+}
