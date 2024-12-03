@@ -1,8 +1,6 @@
 # Write your serializers here
 from rest_framework import serializers
-from django.urls import reverse
 from .models import Album, Song, AlbumTracklistItem, MusicManagerUser
-
 
 class SongSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='songs-detail')
@@ -10,8 +8,6 @@ class SongSerializer(serializers.ModelSerializer):
     class Meta:
         model = Song
         fields = ['id', 'url', 'title', 'length']
-
-
 
 class AlbumSerializer(serializers.ModelSerializer):
     tracks = SongSerializer(many=True, read_only=True)
@@ -50,12 +46,10 @@ class AlbumSerializer(serializers.ModelSerializer):
     def get_total_playtime(self, obj):
         return sum(song.length for song in obj.tracks.all())
 
-
 class AlbumTracklistSerializer(serializers.ModelSerializer):
     class Meta:
         model = AlbumTracklistItem
         fields = ['id', 'album', 'song', 'position']
-
 
 class MusicManagerUserSerializer(serializers.ModelSerializer):
     class Meta:
