@@ -45,7 +45,7 @@ class AlbumListView(ListView):
 
         return context
 
-class AlbumDetailView(LoginRequiredMixin, DetailView):
+class AlbumDetailView(DetailView):
     """
     Displays details of a single album.
     Looks up album by its ID and optional slug.
@@ -74,8 +74,10 @@ class AlbumDetailView(LoginRequiredMixin, DetailView):
         user = self.request.user
         context = super().get_context_data(**kwargs)
 
-        music_manager_user = MusicManagerUser.objects.get(user=user)
-        context['display_name'] = music_manager_user.display_name
+        # Add display name only if the user is authenticated
+        if user.is_authenticated:
+            music_manager_user = MusicManagerUser.objects.get(user=user)
+            context['display_name'] = music_manager_user.display_name
 
         # Fetch all tracks related to the album through the AlbumTracklistItem model
         album = self.object
