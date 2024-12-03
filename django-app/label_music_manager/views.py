@@ -1,6 +1,7 @@
 # Use this file for your templated views only
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
+from django.db import transaction
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, UpdateView, DeleteView, CreateView
 from rest_framework.exceptions import PermissionDenied
@@ -248,11 +249,18 @@ class AlbumCreateView(LoginRequiredMixin, CreateView):
         return context
 
     def form_valid(self, form):
-        """
-        Provide confirmation message upon successful album creation.
-        """
+        # Save the album to get an ID
+        album = form.save()
+
+        # Add selected tracks to the album
+        selected_tracks = self.request.POST.getlist('tracks')
+        for track_id in selected_tracks:
+            song = Song.objects.get(id=track_id)
+            album.tracks.add(song)
+
         messages.success(self.request, 'Album created successfully.')
         return super().form_valid(form)
+
 
     def get_success_url(self):
         """
