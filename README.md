@@ -1,18 +1,63 @@
-# COM2025 coursework skeleton
+# MyMusicMaestro
 
-## Getting started with the Django application
-- From the command line, navigate to the `django-app` folder using `cd django-app`
-- Install the dependencies by running `python3 -m pip install -r requirements.txt`
-  - You may need to use a virtual environment using `venv` depending on your installation  
-- Manage the application using the management tools with `python3 manage.py` 
+MyMusicMaestro is a web application for managing music labels and artists. It consists of a Django backend and a React frontend.
 
-Your API views must be placed in the `api_views.py` file, with templated user-facing routes  written in `views.py`. These will need importing as required in the subapp's `urls.py`.
+## Backend (Django)
 
-## Getting started with the React application
-- From the command line, navigate to the `react-app` folder using `cd react-app`
-- Install the dependencies by running `npm install`
-- Start the application by running `npm run start`
+```sh
+cd django-app
+```
 
-## Submitting
-You must commit your work to the `main` branch in your individual Surrey GitLab repository for this module. The last commit on this branch will be marked.
+### Setup
 
+1. **Install Dependencies**:
+
+    ```sh
+    pip install -r requirements.txt
+    ```
+
+2. **Apply Migrations**:
+
+    ```sh
+    python manage.py migrate
+    ```
+
+3. **Run the Development Server**:
+
+    ```sh
+    python manage.py runserver
+    ```
+
+### Running Tests
+
+To run the tests for the Django application, use:
+
+  ```sh
+  python manage.py test
+  ```
+
+## Frontend (React)
+
+```sh
+cd react-app
+```
+
+### Setup
+
+1. **Install Dependencies**:
+
+    ```sh
+    npm install
+    ```
+
+2. **Run the Development Server**:
+
+    ```sh
+    npm start
+    ```
+
+**Building for Production**:
+
+```sh
+npm run build
+```
